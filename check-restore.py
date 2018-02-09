@@ -156,6 +156,11 @@ def list_size(debug, username, password, authurl, authversion,
             logger.info(u'swift {0} download {1}'.format(container, f))
 
     local_path_with_prefix = os.path.join(local_path, prefix)
+
+    if not os.path.isdir(local_path_with_prefix):
+        logger.info('Local dir not existing')
+        exit(3)
+
     local_size = get_local_size(local_path_with_prefix)
     diff = remote_size - local_size
 
