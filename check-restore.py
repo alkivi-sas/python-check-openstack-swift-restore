@@ -96,21 +96,28 @@ def get_swift_service(username, password, authurl, authversion,
 @click.option('--depth', prompt=True,
               default=1,
               help='Print size by depth')
+@click.option('--path', prompt=True,
+              default='.',
+              help='Local path where download happen')
 def list_size(debug, username, password, authurl, authversion,
               tenantid, tenantname, regionname,
-              container, prefix, depth):
+              container, prefix, depth, path):
     """
-    Monitor all backup data on a minion.
+    Check swift path versus local path
+    If all files are present in local path return 0
+    Else return 1
 
-    Check duplicity last full backup using log
-    Check object storage date
+    Check for now is by global size
     """
     if debug:
         logger.set_min_level_to_print(logging.DEBUG)
         logger.set_min_level_to_save(logging.DEBUG)
 
+    local_path = os.path.realpath(path)
+
     service = get_swift_service(username, password, authurl, authversion,
                                 tenantid, tenantname, regionname)
+
 
     data = {}
     options = {'prefix': prefix}
@@ -119,6 +126,13 @@ def list_size(debug, username, password, authurl, authversion,
         if page['success']:
             for item in page['listing']:
                 size = item['bytes']
+                name = item['name']
+
+                local_name = os.path.join(local_path, name)
+                if not os.path.isfile(local_name):
+                    logger.debug('File {0} does not exist locally')
+                    exit(1)
+
                 wanted_path = '/'.join(item['name'].split('/')[0:depth])
                 if wanted_path not in data:
                     data[wanted_path] = 0
@@ -127,6 +141,7 @@ def list_size(debug, username, password, authurl, authversion,
             logger.warning('test', page['error'])
 
     for path, size in data.items():
+        logger.info('test {0}'.format(size))
         logger.info('Size of {0} is {1} = {2}'.format(path,
                                                       size,
                                                       sizeof_fmt(size)))
