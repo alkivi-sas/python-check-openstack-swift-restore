@@ -138,7 +138,8 @@ def list_size(debug, username, password, authurl, authversion,
         else:
             logger.warning('test', page['error'])
 
-    local_size = get_local_size(local_path)
+    local_path_with_prefix = os.path.join(local_path, prefix)
+    local_size = get_local_size(local_path_with_prefix)
 
     logger.info('Remote size is {0}'.format(remote_size))
     logger.info('Local size is {0}'.format(local_size))
