@@ -115,25 +115,29 @@ def list_size(debug, username, password, authurl, authversion,
     logger.new_loop_logger()
     for p in prefix:
         logger.new_iteration(prefix=p)
-        logger.debug('starting')
-
         options = {'prefix': p}
 
-        list_parts_gen = service.list(container=container, options=options)
-        for page in list_parts_gen:
-            if page['success']:
-                for item in page['listing']:
-                    size = item['bytes']
-                    name = item['name']
+        containers_list = [container, '{0}_segments'.format(container)]
+        logger.new_loop_logger()
+        for c in containers_list:
+            logger.new_iteration(prefix=c)
+            logger.debug('starting container check')
+            list_parts_gen = service.list(container=c, options=options)
+            for page in list_parts_gen:
+                if page['success']:
+                    for item in page['listing']:
+                        size = item['bytes']
+                        name = item['name']
 
-                    folder_name = '/'.join(name.split('/')[0:depth])
-                    if folder_name not in data:
-                        data[folder_name] = 0
+                        folder_name = '/'.join(name.split('/')[0:depth])
+                        if folder_name not in data:
+                            data[folder_name] = 0
 
-                    data[folder_name] += size
-                    total += size
-            else:
-                logger.warning('test', page['error'])
+                        data[folder_name] += size
+                        total += size
+                else:
+                    logger.warning('test', page['error'])
+        logger.del_loop_logger()
     logger.del_loop_logger()
 
     for path, size in sorted(data.items()):
