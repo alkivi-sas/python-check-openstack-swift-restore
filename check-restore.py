@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*-coding:utf-8 -*
-from __future__ import unicode_literals
-
 import atexit
 import click
 import logging
@@ -137,13 +135,13 @@ def list_size(debug, username, password, authurl, authversion,
 
                 local_name = os.path.join(local_path, name)
                 if not os.path.isfile(local_name):
-                    logger.info('File {0} does not exist locally'.format(name))
+                    logger.info(u'File {0} does not exist locally'.format(name))
                     exit_code = 1
 
                     if len(missing_files) >= number_to_stop:
                         for f in missing_files:
                             logger.info('Helper to for download')
-                            logger.info('swift {0} download {1}'.format(container, f))
+                            logger.info(u'swift {0} download {1}'.format(container, f))
                         exit(exit_code)
                     else:
                         missing_files.append(name)
@@ -154,14 +152,14 @@ def list_size(debug, username, password, authurl, authversion,
     if exit_code:
         for f in missing_files:
             logger.info('Helper to for download')
-            logger.info('swift {0} download {1}'.format(container, f))
+            logger.info(u'swift {0} download {1}'.format(container, f))
         exit(exit_code)
 
     local_path_with_prefix = os.path.join(local_path, prefix)
     local_size = get_local_size(local_path_with_prefix)
 
-    logger.info('Remote size is {0}'.format(remote_size))
-    logger.info('Local size is {0}'.format(local_size))
+    logger.info(u'Remote size is {0}'.format(remote_size))
+    logger.info(u'Local size is {0}'.format(local_size))
 
     diff = remote_size - local_size
 
@@ -171,7 +169,7 @@ def list_size(debug, username, password, authurl, authversion,
         logger.info('Diff is large, exiting with 2')
         exit(2)
     else:
-        logger.info('Small diff {0}'.format(diff))
+        logger.info(u'Small diff {0}'.format(diff))
         exit(0)
 
 
