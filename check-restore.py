@@ -119,7 +119,7 @@ def list_size(debug, username, password, authurl, authversion,
                                 tenantid, tenantname, regionname)
 
 
-    data = {}
+    remote_size = 0
     options = {'prefix': prefix}
     list_parts_gen = service.list(container=container, options=options)
     for page in list_parts_gen:
@@ -132,21 +132,29 @@ def list_size(debug, username, password, authurl, authversion,
                 if not os.path.isfile(local_name):
                     logger.debug('File {0} does not exist locally'.format(name))
                     logger.debug('Local path {0}'.format(local_name))
-                    exit(1)
 
-                wanted_path = '/'.join(item['name'].split('/')[0:depth])
-                if wanted_path not in data:
-                    data[wanted_path] = 0
-                data[wanted_path] += size
+                remote_size += size
         else:
             logger.warning('test', page['error'])
 
-    for path, size in data.items():
-        logger.info('test {0}'.format(size))
-        logger.info('Size of {0} is {1} = {2}'.format(path,
-                                                      size,
-                                                      sizeof_fmt(size)))
+    local_size = get_local_size(local_path)
+
+    logger.info('Remote size is {0}'.format(remote_size))
+    logger.info('Local size is {0}'.format(local_size))
+
     exit(0)
+
+
+
+def get_local_size(folder):
+    total_size = os.path.getsize(folder)
+    for item in os.listdir(folder):
+        itempath = os.path.join(folder, item)
+        if os.path.isfile(itempath):
+            total_size += os.path.getsize(itempath)
+        elif os.path.isdir(itempath):
+            total_size += get_local_size(itempath)
+    return total_size
 
 
 if __name__ == "__main__":
