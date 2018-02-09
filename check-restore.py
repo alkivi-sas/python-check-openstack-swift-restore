@@ -150,10 +150,21 @@ def list_size(debug, username, password, authurl, authversion,
         if max_missing:
             break
 
+    list_segments_gen = service.list(container='{0}_segments'.format(container), options=options)
+    for page in list_segments_gen:
+        if page['success']:
+            for item in page['listing']:
+                size = item['bytes']
+                remote_size += size
+        else:
+            logger.warning('test', page['error'])
+
     if exit_code:
         logger.info('Helper to for download')
         for f in missing_files:
             logger.info(u'swift {0} download {1}'.format(container, f))
+
+    logger.info(u'Remote size is {0}'.format(remote_size))
 
     local_path_with_prefix = os.path.join(local_path, prefix)
 
@@ -164,7 +175,6 @@ def list_size(debug, username, password, authurl, authversion,
     local_size = get_local_size(local_path_with_prefix)
     diff = remote_size - local_size
 
-    logger.info(u'Remote size is {0}'.format(remote_size))
     logger.info(u'Local size is {0}'.format(local_size))
     logger.info(u'Diff is {0}'.format(diff))
 
