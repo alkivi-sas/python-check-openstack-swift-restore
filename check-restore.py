@@ -123,6 +123,7 @@ def list_size(debug, username, password, authurl, authversion,
     exit_code = 0
     missing_files = []
     number_to_stop = 20
+    max_missing = False
 
     remote_size = 0
     options = {'prefix': prefix}
@@ -139,31 +140,32 @@ def list_size(debug, username, password, authurl, authversion,
                     exit_code = 1
 
                     if len(missing_files) >= number_to_stop:
-                        for f in missing_files:
-                            logger.info('Helper to for download')
-                            logger.info(u'swift {0} download {1}'.format(container, f))
-                        exit(exit_code)
+                        max_missing = True
+                        break
                     else:
                         missing_files.append(name)
                 remote_size += size
         else:
             logger.warning('test', page['error'])
+        if max_missing:
+            break
 
     if exit_code:
+        logger.info('Helper to for download')
         for f in missing_files:
-            logger.info('Helper to for download')
             logger.info(u'swift {0} download {1}'.format(container, f))
-        exit(exit_code)
 
     local_path_with_prefix = os.path.join(local_path, prefix)
     local_size = get_local_size(local_path_with_prefix)
+    diff = remote_size - local_size
 
     logger.info(u'Remote size is {0}'.format(remote_size))
     logger.info(u'Local size is {0}'.format(local_size))
+    logger.info(u'Diff is {0}'.format(diff))
 
-    diff = remote_size - local_size
-
-    if diff < 0:
+    if exit_code:
+        exit(exit_code)
+    elif diff < 0:
         exit(0)
     elif diff > ALLOWED_DIFF:
         logger.info('Diff is large, exiting with 2')
