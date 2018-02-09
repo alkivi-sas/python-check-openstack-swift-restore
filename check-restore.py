@@ -23,6 +23,9 @@ atexit.register(LOCK.cleanup)
 
 DEFAULT_AUTH = 'https://auth.cloud.ovh.net/v2.0/'
 
+# TODO make this dynamic, using number of files ?
+ALLOWED_DIFF = 5000
+
 
 def sizeof_fmt(num, suffix='B'):
     for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
@@ -131,8 +134,8 @@ def list_size(debug, username, password, authurl, authversion,
 
                 local_name = os.path.join(local_path, name)
                 if not os.path.isfile(local_name):
-                    logger.debug('File {0} does not exist locally'.format(name))
-                    logger.debug('Local path {0}'.format(local_name))
+                    logger.info('File {0} does not exist locally'.format(name))
+                    exit(1)
 
                 remote_size += size
         else:
@@ -144,8 +147,16 @@ def list_size(debug, username, password, authurl, authversion,
     logger.info('Remote size is {0}'.format(remote_size))
     logger.info('Local size is {0}'.format(local_size))
 
-    exit(0)
+    diff = remote_size - local_size
 
+    if diff < 0:
+        exit(0)
+    elif diff > ALLOWED_DIFF:
+        logger.info('Diff is large, exiting with 1')
+        exit(1)
+    else:
+        logger.info('Small diff {0}'.format(diff))
+        exit(0)
 
 
 def get_local_size(folder):
