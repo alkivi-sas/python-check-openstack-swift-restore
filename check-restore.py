@@ -122,6 +122,10 @@ def list_size(debug, username, password, authurl, authversion,
                                 tenantid, tenantname, regionname)
 
 
+    exit_code = 0
+    missing_files = []
+    number_to_stop = 20
+
     remote_size = 0
     options = {'prefix': prefix}
     list_parts_gen = service.list(container=container, options=options)
@@ -134,11 +138,24 @@ def list_size(debug, username, password, authurl, authversion,
                 local_name = os.path.join(local_path, name)
                 if not os.path.isfile(local_name):
                     logger.info('File {0} does not exist locally'.format(name))
-                    exit(1)
+                    exit_code = 1
 
+                    if len(missing_files) >= number_to_stop:
+                        for f in missing_files:
+                            logger.info('Helper to for download')
+                            logger.info('swift {0} download {1}'.format(container, f))
+                        exit(exit_code)
+                    else:
+                        missing_files.append(name)
                 remote_size += size
         else:
             logger.warning('test', page['error'])
+
+    if exit_code:
+        for f in missing_files:
+            logger.info('Helper to for download')
+            logger.info('swift {0} download {1}'.format(container, f))
+        exit(exit_code)
 
     local_path_with_prefix = os.path.join(local_path, prefix)
     local_size = get_local_size(local_path_with_prefix)
