@@ -130,7 +130,8 @@ def list_size(debug, username, password, authurl, authversion,
 
                 local_name = os.path.join(local_path, name)
                 if not os.path.isfile(local_name):
-                    logger.debug('File {0} does not exist locally')
+                    logger.debug('File {0} does not exist locally'.format(name))
+                    logger.debug('Local path {0}'.format(local_name))
                     exit(1)
 
                 wanted_path = '/'.join(item['name'].split('/')[0:depth])
