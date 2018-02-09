@@ -1,0 +1,6 @@
+scriptlock
+alkivi-logger
+flake8
+click
+python-keystoneclient
+python-swiftclient
