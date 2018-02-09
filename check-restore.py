@@ -108,10 +108,9 @@ def list_size(debug, username, password, authurl, authversion,
               container, prefix, depth, path):
     """
     Check swift path versus local path
-    If all files are present in local path return 0
-    Else return 1
-
-    Check for now is by global size
+    If a file is missing locally, return 1
+    If the remote_size is bigger than ALLOWED_DIFF, return 2
+    Otherwise return 0
     """
     if debug:
         logger.set_min_level_to_print(logging.DEBUG)
@@ -152,8 +151,8 @@ def list_size(debug, username, password, authurl, authversion,
     if diff < 0:
         exit(0)
     elif diff > ALLOWED_DIFF:
-        logger.info('Diff is large, exiting with 1')
-        exit(1)
+        logger.info('Diff is large, exiting with 2')
+        exit(2)
     else:
         logger.info('Small diff {0}'.format(diff))
         exit(0)
