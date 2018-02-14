@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*-coding:utf-8 -*
-import atexit
 import click
 import logging
 import os
 import swiftclient
 
-from scriptlock import Lock
 from alkivi.logger import Logger
 from swiftclient.service import SwiftService
 
@@ -15,9 +13,6 @@ logger = Logger(min_log_level_to_mail=None,
                 min_log_level_to_save=None,
                 min_log_level_to_print=logging.INFO,
                 min_log_level_to_syslog=None)
-
-LOCK = Lock()
-atexit.register(LOCK.cleanup)
 
 DEFAULT_AUTH = 'https://auth.cloud.ovh.net/v2.0/'
 
@@ -119,7 +114,6 @@ def list_size(debug, username, password, authurl, authversion,
     service = get_swift_service(username, password, authurl, authversion,
                                 tenantid, tenantname, regionname)
 
-
     exit_code = 0
     missing_files = []
     number_to_stop = 20
@@ -150,7 +144,9 @@ def list_size(debug, username, password, authurl, authversion,
         if max_missing:
             break
 
-    list_segments_gen = service.list(container='{0}_segments'.format(container), options=options)
+    segments_container = '{0}_segments'.format(container)
+    list_segments_gen = service.list(container=segments_container,
+                                     options=options)
     for page in list_segments_gen:
         if page['success']:
             for item in page['listing']:
