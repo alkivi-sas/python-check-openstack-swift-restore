@@ -160,7 +160,8 @@ def list_size(debug, username, password, authurl, authversion,
         for f in missing_files:
             logger.info(u'swift {0} download {1}'.format(container, f))
 
-    logger.info(u'Remote size is {0}'.format(remote_size))
+    logger.info(u'Remote size is {0} == {1}'.format(remote_size,
+                                                    sizeof_fmt(remote_size)))
 
     local_path_with_prefix = os.path.join(local_path, prefix)
 
