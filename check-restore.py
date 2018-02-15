@@ -158,7 +158,7 @@ def list_size(debug, username, password, authurl, authversion,
     if exit_code:
         logger.info('Helper to for download')
         for f in missing_files:
-            logger.info(u'swift {0} download {1}'.format(container, f))
+            logger.info(u'swift download {0} \'{1}\''.format(container, f))
 
     logger.info(u'Remote size is {0} == {1}'.format(remote_size,
                                                     sizeof_fmt(remote_size)))
