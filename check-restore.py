@@ -174,7 +174,8 @@ def list_size(debug, username, password, authurl, authversion,
 
     logger.info(u'Local size is {0} == {1}'.format(local_size,
                                                    sizeof_fmt(local_size)))
-    logger.info(u'Diff is {0}'.format(diff))
+    logger.info(u'Diff is {0} == {1}'.format(diff,
+                                             sizeof_fmt(diff)))
 
     if exit_code:
         exit(exit_code)
