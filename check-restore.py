@@ -128,10 +128,16 @@ def list_size(debug, username, password, authurl, authversion,
                 size = item['bytes']
                 name = item['name']
 
+                if size == 0:
+                    logger.debug(u'Skipping {0} because size is 0'.format(name))
+                    continue
+                if item['content_type'] == 'text/directory':
+                    logger.debug(u'Skipping {0} because is text/directory'.format(name))
+                    continue
+
                 local_name = os.path.join(local_path, name)
                 if not os.path.isfile(local_name):
                     logger.info(u'File {0} does not exist locally'.format(name))
-                    logger.info('test', item)
                     exit_code = 1
 
                     if len(missing_files) >= number_to_stop:
