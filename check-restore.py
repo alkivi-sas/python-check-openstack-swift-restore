@@ -128,11 +128,8 @@ def list_size(debug, username, password, authurl, authversion,
                 size = item['bytes']
                 name = item['name']
 
-                if size == 0:
-                    logger.debug(u'Skipping {0} because size is 0'.format(name), item)
-                    continue
-                if item['content_type'] == 'text/directory':
-                    logger.debug(u'Skipping {0} because is text/directory'.format(name), item)
+                if size == 0 and item['content_type'] == 'text/directory':
+                    logger.debug(u'Skipping {0} because size is 0 and is text/directory'.format(name))
                     continue
 
                 local_name = os.path.join(local_path, name)
