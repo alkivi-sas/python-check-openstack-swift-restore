@@ -131,6 +131,7 @@ def list_size(debug, username, password, authurl, authversion,
                 local_name = os.path.join(local_path, name)
                 if not os.path.isfile(local_name):
                     logger.info(u'File {0} does not exist locally'.format(name))
+                    logger.info('test', item)
                     exit_code = 1
 
                     if len(missing_files) >= number_to_stop:
