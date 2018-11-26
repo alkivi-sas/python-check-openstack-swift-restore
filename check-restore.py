@@ -96,9 +96,12 @@ def get_swift_service(username, password, authurl, authversion,
 @click.option('--path', prompt=True,
               default='.',
               help='Local path where download happen')
+@click.option('--limit',
+              default=20,
+              help='Stop checking when this number of mismatch is found')
 def list_size(debug, username, password, authurl, authversion,
               tenantid, tenantname, regionname,
-              container, prefix, depth, path):
+              container, prefix, depth, path, limit):
     """
     Check swift path versus local path
     If a file is missing locally, return 1
@@ -116,7 +119,7 @@ def list_size(debug, username, password, authurl, authversion,
 
     exit_code = 0
     missing_files = []
-    number_to_stop = 20
+    number_to_stop = limit
     max_missing = False
 
     remote_size = 0
